@@ -23,6 +23,7 @@ function test(func) {
     console.log(result);
 }
 
+// o(mn)
 function compareMethodOne(element) {
     var compareWords = element.split(" ");
 
@@ -35,6 +36,7 @@ function compareMethodOne(element) {
     similarityValues.push(compareWords.length - a + Math.abs(Math.floor((targetString.length - element.length) / 2)));
 }
 
+// o(m * n * avg(element avg word lengths & targetString avg word lengths))
 function compareMethodTwo(element) {
     const elementCharSum = element.split(" ").map((word) => {
         let total = 0;
@@ -58,15 +60,20 @@ function compareMethodTwo(element) {
     similarityValues.push(total);
 }
 
+// Updated version of method two
+// o(m * n * avg(element avg word lengths & targetString avg word lengths))
 function compareMethodThree(element) {
+    // Gets each word from string
     const elementWords = element.split(" ");
-    const elementCharSum = element.split(" ").map((word) => {
+    // Gets each word's value from the compared element
+    const elementCharSum = elementWords.map((word) => {
         let total = 0;
         for (i = 0; i < word.length; i++) {
             total += word.charCodeAt(i);
         }
         return total;
     });
+    // Gets each word's value from the target string
     const targetCharSum = targetString.split(" ").map((word) => {
         let total = 0;
         for (i = 0; i < word.length; i++) {
@@ -77,6 +84,11 @@ function compareMethodThree(element) {
 
     var total = 0;
     for (i = 0; i < targetCharSum.length; i++) {
+        // Gets the minimum number comparing
+        // the value of the target string's word
+        // at index i to all values in the compare
+        // string. This is multiplied by the difference
+        // in length of both words.
         total += Math.min(
             ...elementCharSum.map(
                 (c) =>
