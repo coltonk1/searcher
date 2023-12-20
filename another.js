@@ -28,6 +28,7 @@ const types = {
         "pay",
         "paid",
         "bill",
+        "bills",
         "billed",
         "finance",
         "finances",
@@ -35,6 +36,8 @@ const types = {
         "expense",
         "expenses",
         "much",
+        "payment",
+        "payments",
     ],
     guide: [
         "how",
@@ -86,15 +89,21 @@ function testSentence(target) {
 
 function getType(wordArray) {
     let foundTypes = [];
+    let removeIndex = {};
     // Checks if any word is one of the keywords
     for (const [type, keywords] of Object.entries(types)) {
         for (const word of wordArray) {
             const lowerWord = word[0].toLowerCase();
             if (keywords.includes(lowerWord)) {
                 foundTypes.push(type);
-                wordArray.splice(wordArray.indexOf(word), 1);
+                removeIndex[wordArray.indexOf(word)] = "";
             }
         }
+    }
+    let indexArray = Object.keys(removeIndex);
+    indexArray.sort((a, b) => parseInt(b) - parseInt(a));
+    for (const index of indexArray) {
+        wordArray.splice(index, 1);
     }
 
     // Prioritize certain types if multiple are found
@@ -170,3 +179,4 @@ testSentence("What payment is coming up next?");
 testSentence("How do I make lasanga?");
 testSentence("When do I have to go to first period?");
 testSentence("How much money do I need to spend this week?");
+testSentence("How much money do I need this week?");
