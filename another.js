@@ -135,9 +135,41 @@ function getSubject(wordArray) {
     return subjectTokens.join(" ");
 }
 
-const monthArray = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december", ""];
+const monthArray = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+    "",
+    "",
+    "",
+];
 
-const timeArray = ["this", "next", "week", "weeks", "month", "months", "year", "tomorrow", "today", "end", "last", "now", "ago"];
+const timeArray = [
+    "this",
+    "next",
+    "week",
+    "weeks",
+    "month",
+    "months",
+    "year",
+    "tomorrow",
+    "today",
+    "end",
+    "last",
+    "now",
+    "ago",
+    "day",
+    "days",
+];
 
 function getRestriction(wordArray) {
     let tempResult = "";
@@ -180,3 +212,4 @@ testSentence("How do I make lasanga?");
 testSentence("When do I have to go to first period?");
 testSentence("How much money do I need to spend this week?");
 testSentence("How much money do I need this week?");
+testSentence("How much money do I need in 7 days?");
