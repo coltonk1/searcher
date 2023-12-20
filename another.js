@@ -1,15 +1,65 @@
 var pos = require("pos");
 
-var notes = ["note", "material", "concept", "lecture", "topic"];
-var reminders = ["when", "where"];
-var finance = ["much", "spend", "money", "pay"];
-var guide = ["how", "guide"];
+// Keywords to determine type
+const types = {
+    notes: [
+        "note",
+        "notes",
+        "material",
+        "materials",
+        "concept",
+        "concepts",
+        "lecture",
+        "lectures",
+        "topic",
+        "topics",
+        "learn",
+        "study",
+        "revise",
+        "review",
+    ],
+    reminders: ["when", "where", "remind", "schedule", "schedules", "reminder", "reminders", "due", "deadline", "deadlines"],
+    finance: [
+        "money",
+        "spend",
+        "cost",
+        "budget",
+        "budgets",
+        "pay",
+        "paid",
+        "bill",
+        "billed",
+        "finance",
+        "finances",
+        "financed",
+        "expense",
+        "expenses",
+        "much",
+    ],
+    guide: [
+        "how",
+        "guide",
+        "guides",
+        "instruct",
+        "explain",
+        "explains",
+        "teach",
+        "teaches",
+        "advice",
+        "instruction",
+        "instructions",
+        "tutorial",
+        "tutorials",
+    ],
+};
 
+// Testing each method with multiple sentences
 function testSentence(target) {
     var words = new pos.Lexer().lex(target);
     var tagger = new pos.Tagger();
     var taggedWords = tagger.tag(words);
     var result = [];
+    // Removing unnecessary words
     for (i = 0; i < taggedWords.length; i++) {
         if (
             taggedWords[i][1].startsWith("V") ||
@@ -33,52 +83,71 @@ function testSentence(target) {
 }
 
 function getType(wordArray) {
-    for (i = 0; i < wordArray.length; i++) {
-        let word = wordArray[i][0].toLowerCase();
-        for (j = 0; j < notes.length; j++) {
-            if (word.includes(notes[j])) {
-                wordArray.splice(i, 1);
-                return ["notes", wordArray];
-            }
-        }
-    }
-    for (i = 0; i < wordArray.length; i++) {
-        let word = wordArray[i][0].toLowerCase();
-        for (j = 0; j < finance.length; j++) {
-            if (word.includes(finance[j])) {
-                wordArray.splice(i, 1);
-                return ["finance", wordArray];
-            }
-        }
-    }
-    for (i = 0; i < wordArray.length; i++) {
-        let word = wordArray[i][0].toLowerCase();
-        for (j = 0; j < guide.length; j++) {
-            if (word.includes(guide[j])) {
-                wordArray.splice(i, 1);
-                return ["guide", wordArray];
+    let foundTypes = [];
+    // Checks if any word is one of the keywords
+    for (const [type, keywords] of Object.entries(types)) {
+        for (const word of wordArray) {
+            const lowerWord = word[0].toLowerCase();
+            if (keywords.includes(lowerWord)) {
+                foundTypes.push(type);
+                wordArray.splice(wordArray.indexOf(word), 1);
             }
         }
     }
 
+    // Prioritize certain types if multiple are found
+    // May change this to keep all types found
+    const priorityTypes = ["finance", "guide", "notes"];
+    for (const priorityType of priorityTypes) {
+        if (foundTypes.includes(priorityType)) {
+            return [priorityType, wordArray];
+        }
+    }
+
+    // Default to "reminder" if no other types are found
     return ["reminder", wordArray];
 }
 
 function getSubject(wordArray) {
-    let output = [];
-    for (i = 0; i < wordArray.length; i++) {
-        if (wordArray[i][1].startsWith("JJ") || wordArray[i][1].startsWith("NN")) {
-            output.push(wordArray[i]);
+    const subjectTokens = [];
+    // Removes "/"
+    for (let i = 0; i < wordArray.length; i++) {
+        const tag = wordArray[i][1];
+        if (wordArray[i][0] == "/") continue;
+
+        // Prioritize nouns and adjectives
+        if (tag.startsWith("NN") || tag.startsWith("JJ")) {
+            subjectTokens.push(wordArray[i][0]);
         }
     }
-    let str = "";
-    for (i = 0; i < output.length; i++) {
-        str += output[i][0] + " ";
-    }
-    return str;
+
+    return subjectTokens.join(" ");
 }
 
-const monthArray = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december"];
+const monthArray = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "november",
+    "december",
+    "this",
+    "next",
+    "week",
+    "weeks",
+    "month",
+    "months",
+    "year",
+    "tomorrow",
+    "today",
+    "end",
+    "last",
+];
 
 function getRestriction(wordArray) {
     let tempResult = "";
@@ -106,11 +175,12 @@ testSentence("I need my computer science notes please");
 testSentence("I need my horse notes");
 testSentence("Computer science notes");
 testSentence("Computer science notes I took between August 26 2020 and September 1 2020");
+testSentence("Computer science notes I took between today and the end of next month");
+testSentence("Computer science notes I took between the beginning of last week and the end of next month");
+testSentence("Computer science notes I took between the beginning of last week and the end of 2 weeks from now");
 testSentence("During 8/26/2020, what notes did I have?");
-
 testSentence("How much money did I spend on 8/26/2020?");
 testSentence("What payment is coming up next?");
-
 testSentence("How do I make lasanga?");
-
 testSentence("When do I have to go to first period?");
+testSentence("How much money do I need to spend this week?");
