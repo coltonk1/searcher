@@ -66,7 +66,8 @@ function testSentence(target) {
             taggedWords[i][1].startsWith("N") ||
             taggedWords[i][1].startsWith("CD") ||
             taggedWords[i][1].startsWith("W") ||
-            taggedWords[i][1].startsWith("JJ")
+            taggedWords[i][1].startsWith("JJ") ||
+            taggedWords[i][0].toLowerCase() === "ago"
         ) {
             if (taggedWords[i][0] != "/" && taggedWords[i][0] != "-" && taggedWords[i][0] != "\\") {
                 result.push(taggedWords[i]);
@@ -74,12 +75,13 @@ function testSentence(target) {
         }
     }
 
+    console.log("-----------");
+    console.log("Sentence: " + target);
     result = getType(result);
-    console.log(result[0]);
+    console.log("Type: " + result[0]);
     result = getRestriction(result[1]);
-    console.log(result[0]);
-    console.log(getSubject(result[1]));
-    console.log();
+    console.log("Time: " + result[0]);
+    console.log("Subject: " + getSubject(result[1]));
 }
 
 function getType(wordArray) {
@@ -124,30 +126,9 @@ function getSubject(wordArray) {
     return subjectTokens.join(" ");
 }
 
-const monthArray = [
-    "january",
-    "february",
-    "march",
-    "april",
-    "may",
-    "june",
-    "july",
-    "august",
-    "september",
-    "november",
-    "december",
-    "this",
-    "next",
-    "week",
-    "weeks",
-    "month",
-    "months",
-    "year",
-    "tomorrow",
-    "today",
-    "end",
-    "last",
-];
+const monthArray = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "november", "december", ""];
+
+const timeArray = ["this", "next", "week", "weeks", "month", "months", "year", "tomorrow", "today", "end", "last", "now", "ago"];
 
 function getRestriction(wordArray) {
     let tempResult = "";
@@ -156,7 +137,11 @@ function getRestriction(wordArray) {
         let word = wordArray[i][0].toLowerCase();
         for (j = 0; j < monthArray.length; j++) {
             if (word == monthArray[j]) {
-                tempResult += monthArray[j] + " ";
+                tempResult += j + 1 + " ";
+                wordArray.splice(i, 1);
+                break;
+            } else if (word == timeArray[j]) {
+                tempResult += timeArray[j] + " ";
                 wordArray.splice(i, 1);
                 break;
             }
@@ -178,6 +163,7 @@ testSentence("Computer science notes I took between August 26 2020 and September
 testSentence("Computer science notes I took between today and the end of next month");
 testSentence("Computer science notes I took between the beginning of last week and the end of next month");
 testSentence("Computer science notes I took between the beginning of last week and the end of 2 weeks from now");
+testSentence("Computer science notes I took between the beginning from 2 weeks ago to the end of this month");
 testSentence("During 8/26/2020, what notes did I have?");
 testSentence("How much money did I spend on 8/26/2020?");
 testSentence("What payment is coming up next?");
