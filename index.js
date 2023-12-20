@@ -1,4 +1,4 @@
-const targetString = "computer science";
+const targetString = "do computer science";
 const compareTo = [
     "how to learn computer science",
     "how to learn computer science bla bla bla bla bla bla",
@@ -134,7 +134,7 @@ function levenshteinDistance(str2) {
     similarityValues.push(dp[m][n]);
 }
 
-test(compareMethodOne);
-test(compareMethodTwo);
+// test(compareMethodOne);
+// test(compareMethodTwo);
 test(compareMethodThree);
-test(levenshteinDistance);
+// test(levenshteinDistance);
